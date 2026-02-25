@@ -11,6 +11,9 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/joho/godotenv"
+
+	"github.com/gin-contrib/cors"
+	"time"
 )
 
 func main() {
@@ -50,29 +53,40 @@ func main() {
 	}
 
 	// ===== NORMAL API MODE =====
+	r := gin.Default()
+
+	// ===== CORS CONFIG =====
+	r.Use(cors.New(cors.Config{
+		AllowOrigins:     []string{"http://localhost:3000"}, // Next.js
+		AllowMethods:     []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
+		AllowHeaders:     []string{"Origin", "Content-Type", "Authorization"},
+		ExposeHeaders:    []string{"Content-Length"},
+		AllowCredentials: true,
+		MaxAge:           12 * time.Hour,
+	}))
+
+	routes.Setup(r)
+
+	port := os.Getenv("PORT")
+	if port == "" {
+		port = "8085"
+	}
+
+	log.Println("Server running on port", port)
+	r.Run(":" + port)
+
+	// ===== NORMAL API MODE SSL Sementara =====
 	// r := gin.Default()
 	// routes.Setup(r)
 
 	// port := os.Getenv("PORT")
 	// if port == "" {
-	// 	port = "8085"
+	// 	port = "8443"
 	// }
 
-	// log.Println("Server running on port", port)
-	// r.Run(":" + port)
-
-	// ===== NORMAL API MODE SSL Sementara =====
-	r := gin.Default()
-	routes.Setup(r)
-
-	port := os.Getenv("PORT")
-	if port == "" {
-		port = "8443"
-	}
-
-	log.Println("Server running on https port", port)
-	err := r.RunTLS(":"+port, "cert.pem", "key.pem")
-	if err != nil {
-		log.Fatal("Failed to run HTTPS server:", err)
-	}
+	// log.Println("Server running on https port", port)
+	// err := r.RunTLS(":"+port, "cert.pem", "key.pem")
+	// if err != nil {
+	// 	log.Fatal("Failed to run HTTPS server:", err)
+	// }
 }
