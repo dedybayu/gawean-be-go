@@ -50,14 +50,29 @@ func main() {
 	}
 
 	// ===== NORMAL API MODE =====
+	// r := gin.Default()
+	// routes.Setup(r)
+
+	// port := os.Getenv("PORT")
+	// if port == "" {
+	// 	port = "8085"
+	// }
+
+	// log.Println("Server running on port", port)
+	// r.Run(":" + port)
+
+	// ===== NORMAL API MODE SSL Sementara =====
 	r := gin.Default()
 	routes.Setup(r)
 
 	port := os.Getenv("PORT")
 	if port == "" {
-		port = "8080"
+		port = "8443"
 	}
 
-	log.Println("Server running on port", port)
-	r.Run(":" + port)
+	log.Println("Server running on https port", port)
+	err := r.RunTLS(":"+port, "cert.pem", "key.pem")
+	if err != nil {
+		log.Fatal("Failed to run HTTPS server:", err)
+	}
 }
