@@ -2,10 +2,12 @@ package controllers
 
 import (
 	"net/http"
+	"strings"
 
 	"gawean-be-go/internal/config"
 	"gawean-be-go/internal/models"
 	"gawean-be-go/utils"
+
 	"github.com/gin-gonic/gin"
 )
 
@@ -21,6 +23,17 @@ func Register(c *gin.Context) {
 		return
 	}
 
+	req.Email = strings.ToLower(strings.TrimSpace(req.Email))
+
+	// 🔥 CEK DULU
+	var existingUser models.User
+	if err := config.DB.Where("email = ?", req.Email).First(&existingUser).Error; err == nil {
+		c.JSON(http.StatusConflict, gin.H{
+			"message": "Email already registered",
+		})
+		return
+	}
+
 	var level models.Level
 	config.DB.Where("kode = ?", "USR").First(&level)
 
@@ -31,9 +44,16 @@ func Register(c *gin.Context) {
 		LevelID:  level.ID,
 	}
 
-	config.DB.Create(&user)
+	if err := config.DB.Create(&user).Error; err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"message": "Failed to register",
+		})
+		return
+	}
 
-	c.JSON(http.StatusCreated, gin.H{"message": "Register success"})
+	c.JSON(http.StatusCreated, gin.H{
+		"message": "Register success",
+	})
 }
 
 func Login(c *gin.Context) {
