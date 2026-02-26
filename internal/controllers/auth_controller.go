@@ -67,7 +67,7 @@ func Login(c *gin.Context) {
 	var user models.User
 	result := config.DB.Preload("Level").Where("email = ?", req.Email).First(&user)
 	if result.Error != nil || !utils.CheckPassword(user.Password, req.Password) {
-		c.JSON(http.StatusUnauthorized, gin.H{"message": "Invalid credentials"})
+		c.JSON(http.StatusUnauthorized, gin.H{"message": "Invalid email or password"})
 		return
 	}
 
