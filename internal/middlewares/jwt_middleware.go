@@ -4,7 +4,7 @@ import (
 	"net/http"
 	"strings"
 
-	"gawean-be-go/utils"
+	"gawean-be-go/pkg/utils"
 	"github.com/gin-gonic/gin"
 )
 

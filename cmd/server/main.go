@@ -6,8 +6,9 @@ import (
 	"os"
 
 	"gawean-be-go/internal/config"
-	"gawean-be-go/internal/routes"
+	"gawean-be-go/routes"
 	"gawean-be-go/internal/seeders"
+	"gawean-be-go/migration"
 
 	"github.com/gin-gonic/gin"
 	"github.com/joho/godotenv"
@@ -34,14 +35,14 @@ func main() {
 	// ===== HANDLE FLAGS =====
 	if *migrateSeed {
 		config.ResetDatabase()
-		config.Migrate()
+		migration.Migrate()
 		seeders.SeedLevel()
 		log.Println("Database reset, migration & seeder completed")
 		return
 	}
 
 	if *migrate {
-		config.Migrate()
+		migration.Migrate()
 		log.Println("Migration completed")
 		return
 	}

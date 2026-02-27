@@ -6,12 +6,13 @@ import (
 )
 
 func SeedLevel() {
-	levels := []models.Level{
-		{NamaLevel: "Administrator", Kode: "ADM"},
-		{NamaLevel: "User", Kode: "USR"},
+	levels := []models.LevelModel{
+		{LevelName: "Administrator", LevelCode: "ADM"},
+		{LevelName: "Supervisor", LevelCode: "SPV"},
+		{LevelName: "User", LevelCode: "USR"},
 	}
 
 	for _, level := range levels {
-		config.DB.FirstOrCreate(&level, models.Level{Kode: level.Kode})
+		config.DB.FirstOrCreate(&level, models.LevelModel{LevelCode: level.LevelCode})
 	}
 }

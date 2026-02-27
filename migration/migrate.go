@@ -1,14 +1,15 @@
-package config
+package migration
 
 import (
 	"gawean-be-go/internal/models"
+	"gawean-be-go/internal/config"
 	"log"
 )
 
 func Migrate() {
-	err := DB.AutoMigrate(
-		&models.Level{},
-		&models.User{},
+	err := config.DB.AutoMigrate(
+		&models.LevelModel{},
+		&models.UserModel{},
 	)
 
 	if err != nil {
