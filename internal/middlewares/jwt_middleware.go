@@ -1,6 +1,7 @@
 package middlewares
 
 import (
+	// "fmt"
 	"net/http"
 	"strings"
 
@@ -10,18 +11,44 @@ import (
 
 func JWTAuth() gin.HandlerFunc {
 	return func(c *gin.Context) {
-		tokenStr := strings.Replace(c.GetHeader("Authorization"), "Bearer ", "", 1)
+
+		authHeader := c.GetHeader("Authorization")
+		if authHeader == "" {
+			c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{
+				"message": "Authorization header required",
+			})
+			return
+		}
+
+		if !strings.HasPrefix(authHeader, "Bearer ") {
+			c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{
+				"message": "Invalid token format",
+			})
+			return
+		}
+
+		tokenStr := strings.TrimPrefix(authHeader, "Bearer ")
 
 		token, claims, err := utils.ParseToken(tokenStr)
-		if err != nil || !token.Valid {
+		// fmt.Println("PARSE ERROR:", err)
+
+		if err != nil || token == nil || !token.Valid {
 			c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{
 				"message": "Unauthorized",
 			})
 			return
 		}
 
-		c.Set("user_id", uint(claims["user_id"].(float64)))
-		c.Set("role", claims["role"].(string))
+		userIDFloat, ok := claims["user_id"].(float64)
+		if !ok {
+			c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{
+				"message": "Invalid token claims",
+			})
+			return
+		}
+
+		c.Set("user_id", uint(userIDFloat))
+		c.Set("role", claims["role"])
 		c.Next()
 	}
 }

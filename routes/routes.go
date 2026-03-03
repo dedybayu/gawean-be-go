@@ -22,6 +22,8 @@ func Setup(r *gin.Engine) {
 	{
 		auth.POST("/register", handler.Register) // kalau belum dipisah service
 		auth.POST("/login", handler.Login)
+		auth.POST("/refresh", handler.RefreshToken)
+		auth.POST("/logout", middlewares.JWTAuth(), handler.Logout)
 	}
 
 	// ===== USER ROUTES =====

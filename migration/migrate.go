@@ -10,6 +10,7 @@ func Migrate() {
 	err := config.DB.AutoMigrate(
 		&models.LevelModel{},
 		&models.UserModel{},
+		&models.RefreshToken{},
 	)
 
 	if err != nil {
