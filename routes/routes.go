@@ -12,18 +12,20 @@ import (
 
 func Setup(r *gin.Engine) {
 
-	// 🔹 Dependency Injection
 	userRepo := repository.NewUserRepository(config.DB)
+	refreshRepo := repository.NewRefreshTokenRepository(config.DB)
+
+	authService := service.NewAuthService(userRepo, refreshRepo)
+	authHandler := handler.NewAuthHandler(authService)
 	userService := service.NewUserService(userRepo)
 	userHandler := handler.NewUserHandler(userService)
 
-	// ===== AUTH ROUTES =====
 	auth := r.Group("/auth")
 	{
-		auth.POST("/register", handler.Register) // kalau belum dipisah service
-		auth.POST("/login", handler.Login)
-		auth.POST("/refresh", handler.RefreshToken)
-		auth.POST("/logout", middlewares.JWTAuth(), handler.Logout)
+		auth.POST("/register", authHandler.Register)
+		auth.POST("/login", authHandler.Login)
+		auth.POST("/refresh", authHandler.RefreshToken)
+		auth.POST("/logout", middlewares.JWTAuth(), authHandler.Logout)
 	}
 
 	// ===== USER ROUTES =====

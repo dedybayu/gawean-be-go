@@ -19,7 +19,7 @@ func NewUserHandler(userService service.UserService) *UserHandler {
 func (h *UserHandler) UserInfo(c *gin.Context) {
 	userID := c.GetUint("user_id")
 
-	user, err := h.userService.GetUserInfo(userID)
+	user, err := h.userService.GetUserProfile(userID)
 	if err != nil {
 		c.JSON(http.StatusNotFound, gin.H{"error": err.Error()})
 		return
