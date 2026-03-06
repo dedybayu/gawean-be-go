@@ -34,4 +34,12 @@ func Setup(r *gin.Engine) {
 		user.GET("/info", userHandler.UserInfo)
 		user.GET("/info-adm", middlewares.OnlyADM(), userHandler.UserInfoADM)
 	}
+
+	// Profile
+	profile := r.Group("/profile", middlewares.JWTAuth())
+	{
+		profile.GET("", userHandler.UserInfo)
+		// profile.PUT("/update", userHandler.UpdateProfile)
+		// profile.PUT("/change-password", userHandler.ChangePassword)
+	}
 }
